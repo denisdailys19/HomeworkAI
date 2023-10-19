@@ -1,7 +1,7 @@
 import { useIsFocused } from '@react-navigation/native';
 import { Camera } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 const ScannerScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -31,7 +31,7 @@ const ScannerScreen = () => {
   return (
     <Camera style={styles.camera} onCameraReady={onCameraReady} type={Camera.Constants.Type.back}>
       <View style={styles.buttonContainer}>
-        <Text style={styles.text}> camera </Text>
+        <Text style={styles.text} onPress={console.log("LOL")} > camera </Text>
       </View>
     </Camera>
   );
