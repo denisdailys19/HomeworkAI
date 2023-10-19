@@ -4,6 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import HomeScreen from './navigation/HomeScreen';
 import AnswersScreen from './navigation/AnswersScreen';
+import ScannerScreen from './navigation/ScannerScreen';
 import SettingsScreen from './navigation/SettingScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -35,7 +36,7 @@ const MainContainer = () => {
           })}
         >
           <Tab.Screen name="Home" component={HomeScreen} options={{headerTitleAlign: 'left'}} />
-          <Tab.Screen name="Scanner" component={HomeScreen} options={{headerTitleAlign: 'left'}} />
+          <Tab.Screen name="Scanner" component={ScannerScreen} options={{headerTitleAlign: 'left'}} />
           <Tab.Screen name="Answers" component={AnswersScreen} options={{headerTitleAlign: 'left'}} />
         </Tab.Navigator>
       </NavigationContainer>
