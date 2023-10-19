@@ -1,37 +1,51 @@
 import { useIsFocused } from '@react-navigation/native';
-import { Camera } from 'expo-camera';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Camera, CameraType, FlashMode } from 'expo-camera';
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, View, Image } from 'react-native';
+
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Entypo from 'react-native-vector-icons/Entypo'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 const ScannerScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
-  const isFocused = useIsFocused();
+  const [type, setType] = useState(CameraType.front);
+  const [flash, setFlash] = useState(FlashMode.off);
+  const [image, setImage] = useState(null);
+  const cameraRef = useRef(null);
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+  var cameraReady = false
 
-  if (!isFocused) {
-    return null;
+  const onPress = () => {
+    setType(type === CameraType.back ? CameraType.front : CameraType.back);
+  }
+  const flashButton = () => {
+    setFlash(flash === FlashMode.off ? FlashMode.on : FlashMode.off)
   }
 
-  if (hasPermission === null) {
-    return <View />;
+  const takePhoto = async () => {
+    if(cameraReady) {
+      try{
+        const data = await cameraRef.current.takePictureAsync();
+        setImage(data.uri);
+      } catch(e) {
+        console.log(e);
+      }
+    }
   }
-  if (!hasPermission) {
-    return <Text>No access to camera</Text>;
+
+  const savePhoto = async () => {
+
   }
-  const onCameraReady = () => {
-    console.log('camera ready');
-  };
 
   return (
-    <Camera style={styles.camera} onCameraReady={onCameraReady} type={Camera.Constants.Type.back}>
+    <Camera style={styles.camera} type={type} onCameraReady={cameraReady = true} ref={cameraRef} flashMode={flash}>
       <View style={styles.buttonContainer}>
-        <Text style={styles.text}> camera </Text>
+        <Ionicons name={ flash === FlashMode.off ? 'flash-off' : 'flash' } style={styles.buttonContents} onPress={flashButton} />
+        <MaterialCommunityIcons name={'camera-flip-outline'} style={styles.buttonContents} onPress={onPress} />
+      </View>
+      <View style={styles.bottomContainer}>
+        <Entypo name={'circle'} style={styles.buttonContainerBottom} onPress={takePhoto} />
       </View>
     </Camera>
   );
@@ -47,16 +61,30 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     backgroundColor: 'transparent',
-    flexDirection: 'row',
-    margin: 20
+    flexDirection: 'column',
+    margin: 10,
+    alignSelf: 'flex-end'
   },
-  button: {
-    flex: 0.1,
-    alignSelf: 'flex-end',
-    alignItems: 'center'
+  bottomContainer: {
+    flex: 1,
+    backgroundColor: "transparent",
+    flexDirection:'row',
+    alignItems:'center'
   },
-  text: {
-    fontSize: 18,
+  buttonContents: {
+    color: 'white',
+    flex: -1,
+    fontSize: 35,
+    position: 'relative',
+    top: 10,
+    height: 40
+  },
+  buttonContainerBottom: {
+    flex: 0.5,
+    fontSize: 70,
+    position: 'absolute',
+    left: '42.5%',
+    top: '75%',
     color: 'white'
   }
 });
