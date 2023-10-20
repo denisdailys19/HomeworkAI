@@ -1,5 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
+import { usePermissions, saveToLibraryAsync } from 'expo-media-library'
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 
@@ -9,12 +10,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 const ScannerScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
+  const [permissionRequest, requestPermission] = usePermissions();
   const [type, setType] = useState(CameraType.front);
   const [flash, setFlash] = useState(FlashMode.off);
   const [image, setImage] = useState(null);
   const cameraRef = useRef(null);
-
-  var cameraReady = false
 
   const onPress = () => {
     setType(type === CameraType.back ? CameraType.front : CameraType.back);
@@ -24,13 +24,12 @@ const ScannerScreen = () => {
   }
 
   const takePhoto = async () => {
-    if(cameraReady) {
-      try{
-        const data = await cameraRef.current.takePictureAsync();
-        setImage(data.uri);
-      } catch(e) {
-        console.log(e);
-      }
+    try{
+      const data = await cameraRef.current.takePictureAsync();
+      setImage(data.uri);
+      saveToLibraryAsync(data.uri);
+    } catch(e) {
+      console.log(e);
     }
   }
 
@@ -39,7 +38,7 @@ const ScannerScreen = () => {
   }
 
   return (
-    <Camera style={styles.camera} type={type} onCameraReady={cameraReady = true} ref={cameraRef} flashMode={flash}>
+    <Camera style={styles.camera} type={type} ref={cameraRef} flashMode={flash}>
       <View style={styles.buttonContainer}>
         <Ionicons name={ flash === FlashMode.off ? 'flash-off' : 'flash' } style={styles.buttonContents} onPress={flashButton} />
         <MaterialCommunityIcons name={'camera-flip-outline'} style={styles.buttonContents} onPress={onPress} />
